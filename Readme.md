@@ -1,4 +1,60 @@
-Readme
+**High level description**
+
+Model for correcting technical variation in Single-Cell gene expression data
+Iterative normalization and clustering method for single-cell gene expression data.
+
+**What is single cell seq?**
+
+The emerging technology of single-cell RNA-seq gives access to gene expression measurements for thousands of cells, allowing discovery and characterization of cell types. Single cell sequqncing presents exciting opportunities to study heterogeneity of expression and characterize unknown cell types. This contrasts traditional bulk gene expression data where the gene expression is measured by an average readout across a bulk of cells.
+
+**Problem with algorithm:**
+
+The data is confounded by technical variation emanating from experimental errors and cell type-specific biases.
+Current approaches perform a global normalization prior to analyzing biological signals, which does not resolve missing data or variation dependent on latent cell types.
+
+**Problem with data:**
+
+* One primary reason that makes single-cell RNA-seq analysis challenging is dropouts, where the data only captures a small fraction of the transcriptome of each cell. Almost all computational algorithms developed for single-cell RNA-seq adopted gene selection, dimension reduction or imputation to address the dropouts.
+* Biases in cell sampling
+* Significant differences in total number of mRNA molecules, as well as variation in library size, defined as sum of amplified mRNA molecules per cell.
+* Signals become more stable when individual signals are summarized (such as in a bulk experiment); thus, the increase in resolution due to sc-seq also means a reduction of the stability of the supporting signals.
+
+**How do we solve it:**
+
+Our model is formulated as a hierarchical Bayesian mixture model with cell-specific scalings that aid the iterative normalization and clustering of cells, teasing apart technical variation from biological signals. We demonstrate that this approach is superior to global normalization followed by clustering.
+
+**How do we measure the impact:**
+
+We show identifiability and weak convergence guarantees of our method and present a scalable Gibbs inference algorithm.
+This method improves cluster inference in both synthetic and real single-cell data compared with previous methods, and allows easy interpretation and recovery of the underlying structure and cell types.
+
+**Data Collection:**
+
+The sample data is collected in form of (cells * genes), where cells are rows and genes are represented as columns. The values are the gene counts for each cell and gene combination.
+The gene data was from the cell type in mouse cortex and hippocampus(http://linnarssonlab.org/cortex/).
+
+
+**Model:**
+
+We used Dirichlet Process Mixture Model for (https://towardsdatascience.com/tl-dr-dirichlet-process-gaussian-mixture-models-made-easy-12b4d492e5f9) for clustering of genes.
+
+**Why:**
+
+When we have limited prior belief over the cluster number or mixing probabilities, we can turn non-parametric and consider infinitely many of them. Naturally many of these clusters will be redundant, and have mixing probabilities so close to 0 that we can just ignore them. Incredibly, this framework lets the data determine the most likely number of clusters.
+
+* Data-smoothing methods define a “similarity” between cells (e.g., cells that are neighbors in a graph or occupy a small region in a latent space) and adjust expression values for each cell based on expression values in similar cells. These methods usually adjust all expression values, including technical zeros, biological zeros, and observed non-zero values.
+
+* Local normalization techniques used for normlaization based on clusters of cell data. Normalization was required for significant diffrences in library size.
+
+* After Data normalization, we used PCA : PRINICIAPL COMPONENT ANALYSIS for dimensionality reduction of data.
+
+
+**Output:**
+
+We evaluated BISCUIT’s performance on real world data using mouse cortex cells from Zeisel et al. (2015) that include ground truth labels for 7 known cell types. For computational speed we chose d = 558 genes with largest standard deviation across n = 3005 cells. Figure S7 shows the confusion matrix for inferred classes and Figure 8 shows the mode of inferred classes across 500 Gibbs sweeps post burn-in of 1500 sweeps compared to their actual cell type
+labels. Cells are visualized using t-SNE dimensionality reduction (Van der Maaten & Hinton, 2008), as this was
+shown to be an effective visualization that captures the cell type structure in single-cell data (Amir et al., 2013).
+
 =======
 This repository contains source code for the paper: [Dirichlet Process Mixture Model for Correcting Technical Variation in Single-Cell Gene Expression Data by Sandhya Prabhakaran*, Elham Azizi*, Ambrose J Carr, and Dana Pe’er](http://jmlr.org/proceedings/papers/v48/prabhakaran16.pdf)  in ICML 2016
 
